@@ -3,21 +3,69 @@
 <head>
   <title>Simple Group Chat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; background: #f9f9f9; }
+    h2 { text-align: center; }
+    #chat { list-style: none; padding: 0; max-height: 400px; overflow-y: auto; border: 1px solid #ddd; background: #fff; margin-top: 20px; }
+    #chat li { padding: 8px; border-bottom: 1px solid #eee; }
+    input { padding: 8px; margin: 5px 0; width: 70%; }
+    button { padding: 8px 16px; }
+    #form { display: flex; justify-content: space-between; align-items: center; }
+  </style>
 </head>
 <body>
 
 <h2>Group Chat</h2>
 
 <input id="username" placeholder="Username">
-<br><br>
-
-<input id="message" placeholder="Message">
-<button id="sendBtn">Send</button>
+<div id="form">
+  <input id="message" placeholder="Type your message">
+  <button id="sendBtn">Send</button>
+</div>
 
 <ul id="chat"></ul>
 
-<script src="/socket.io/socket.io.js"></script>
-<script src="script.js"></script>
+<!-- Connect to your Render server -->
+<script src="https://tunnelling-website.onrender.com/socket.io/socket.io.js"></script>
+<script>
+const socket = io("https://tunnelling-website.onrender.com"); // Render server link
+const chat = document.getElementById("chat");
+const sendBtn = document.getElementById("sendBtn");
+const messageInput = document.getElementById("message");
+const usernameInput = document.getElementById("username");
+
+// Load old messages
+socket.on("loadMessages", (messages) => {
+  messages.forEach(addMessage);
+});
+
+// Receive new message
+socket.on("chatMessage", addMessage);
+
+// Send message on button click
+sendBtn.addEventListener("click", sendMessage);
+
+// Optional: Send message on Enter key
+messageInput.addEventListener("keyup", (e) => {
+  if (e.key === "Enter") sendMessage();
+});
+
+function sendMessage() {
+  const user = usernameInput.value.trim();
+  const text = messageInput.value.trim();
+  if (!user || !text) return;
+
+  socket.emit("chatMessage", { user, text });
+  messageInput.value = "";
+}
+
+function addMessage(msg) {
+  const li = document.createElement("li");
+  li.textContent = msg.user + ": " + msg.text;
+  chat.appendChild(li);
+  chat.scrollTop = chat.scrollHeight; // auto scroll
+}
+</script>
 
 </body>
 </html>
