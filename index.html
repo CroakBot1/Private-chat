@@ -1,42 +1,147 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Simple Group Chat</title>
+  <title>Group Chat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; background: #f9f9f9; }
-    h2 { text-align: center; }
-    #chat { list-style: none; padding: 0; max-height: 400px; overflow-y: auto; border: 1px solid #ddd; background: #fff; margin-top: 20px; }
-    #chat li { padding: 8px; border-bottom: 1px solid #eee; }
-    input { padding: 8px; margin: 5px 0; width: 70%; }
-    button { padding: 8px 16px; }
-    #form { display: flex; justify-content: space-between; align-items: center; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .chat-container {
+      width: 100%;
+      max-width: 600px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      height: 80vh;
+      overflow: hidden;
+    }
+
+    h2 {
+      text-align: center;
+      padding: 15px;
+      margin: 0;
+      background: #4a76a8;
+      color: #fff;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+
+    #chat {
+      list-style: none;
+      padding: 15px;
+      margin: 0;
+      flex-grow: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message {
+      max-width: 70%;
+      margin-bottom: 10px;
+      padding: 10px 15px;
+      border-radius: 20px;
+      word-wrap: break-word;
+      position: relative;
+      display: inline-block;
+      clear: both;
+    }
+
+    .message.user {
+      background: #dcf8c6;
+      align-self: flex-end;
+      border-bottom-right-radius: 0;
+    }
+
+    .message.other {
+      background: #eee;
+      align-self: flex-start;
+      border-bottom-left-radius: 0;
+    }
+
+    .username {
+      font-weight: bold;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    #form {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+      background: #fafafa;
+    }
+
+    #username {
+      width: 20%;
+      padding: 8px;
+      margin-right: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    #message {
+      flex-grow: 1;
+      padding: 8px;
+      margin-right: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    #sendBtn {
+      padding: 8px 16px;
+      border: none;
+      background: #4a76a8;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    #sendBtn:hover {
+      background: #3b5f87;
+    }
+
+    @media screen and (max-width: 500px) {
+      #username { display: none; }
+      #message { width: 70%; }
+    }
   </style>
 </head>
 <body>
 
-<h2>Group Chat</h2>
-
-<input id="username" placeholder="Username">
-<div id="form">
-  <input id="message" placeholder="Type your message">
-  <button id="sendBtn">Send</button>
+<div class="chat-container">
+  <h2>Group Chat</h2>
+  <ul id="chat"></ul>
+  <div id="form">
+    <input id="username" placeholder="Username">
+    <input id="message" placeholder="Type your message">
+    <button id="sendBtn">Send</button>
+  </div>
 </div>
 
-<ul id="chat"></ul>
-
-<!-- Connect to your Render server -->
 <script src="https://tunnelling-website.onrender.com/socket.io/socket.io.js"></script>
 <script>
-const socket = io("https://tunnelling-website.onrender.com"); // Render server link
+const socket = io("https://tunnelling-website.onrender.com");
 const chat = document.getElementById("chat");
 const sendBtn = document.getElementById("sendBtn");
 const messageInput = document.getElementById("message");
 const usernameInput = document.getElementById("username");
 
+// Track your username to color messages differently
+let currentUser = "";
+
 // Load old messages
 socket.on("loadMessages", (messages) => {
-  messages.forEach(addMessage);
+  messages.forEach(msg => addMessage(msg));
 });
 
 // Receive new message
@@ -45,7 +150,7 @@ socket.on("chatMessage", addMessage);
 // Send message on button click
 sendBtn.addEventListener("click", sendMessage);
 
-// Optional: Send message on Enter key
+// Send message on Enter key
 messageInput.addEventListener("keyup", (e) => {
   if (e.key === "Enter") sendMessage();
 });
@@ -55,18 +160,30 @@ function sendMessage() {
   const text = messageInput.value.trim();
   if (!user || !text) return;
 
+  currentUser = user; // store current user
   socket.emit("chatMessage", { user, text });
   messageInput.value = "";
 }
 
 function addMessage(msg) {
   const li = document.createElement("li");
-  li.textContent = msg.user + ": " + msg.text;
+  li.classList.add("message");
+  li.classList.add(msg.user === currentUser ? "user" : "other");
+
+  const usernameSpan = document.createElement("span");
+  usernameSpan.classList.add("username");
+  usernameSpan.textContent = msg.user;
+
+  li.appendChild(usernameSpan);
+
+  const textSpan = document.createElement("span");
+  textSpan.textContent = msg.text;
+  li.appendChild(textSpan);
+
   chat.appendChild(li);
-  chat.scrollTop = chat.scrollHeight; // auto scroll
+  chat.scrollTop = chat.scrollHeight;
 }
 </script>
 
 </body>
 </html>
-
