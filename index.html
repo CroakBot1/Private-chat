@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Group Chat</title>
+  <title>Secure Group Chat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f0f2f5;
+      background: #e6ecf0;
       display: flex;
       justify-content: center;
       padding: 20px;
@@ -32,6 +32,7 @@
       color: #fff;
       border-top-left-radius: 10px;
       border-top-right-radius: 10px;
+      font-size: 1.5rem;
     }
 
     #chat {
@@ -53,6 +54,7 @@
       position: relative;
       display: inline-block;
       clear: both;
+      font-size: 0.95rem;
     }
 
     .message.user {
@@ -69,8 +71,45 @@
 
     .username {
       font-weight: bold;
-      margin-bottom: 5px;
       display: block;
+      margin-bottom: 3px;
+    }
+
+    .timestamp {
+      font-size: 0.7rem;
+      color: #666;
+      margin-top: 3px;
+      display: block;
+      text-align: right;
+    }
+
+    #loginForm {
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      background: #fafafa;
+      border-bottom: 1px solid #ddd;
+    }
+
+    #loginForm input {
+      padding: 8px;
+      margin-bottom: 5px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+    }
+
+    #loginBtn {
+      padding: 8px 16px;
+      border: none;
+      background: #4a76a8;
+      color: #fff;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    #loginBtn:hover {
+      background: #3b5f87;
     }
 
     #form {
@@ -80,19 +119,11 @@
       background: #fafafa;
     }
 
-    #username {
-      width: 20%;
-      padding: 8px;
-      margin-right: 5px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
     #message {
       flex-grow: 1;
       padding: 8px;
       margin-right: 5px;
-      border-radius: 5px;
+      border-radius: 20px;
       border: 1px solid #ccc;
     }
 
@@ -101,7 +132,7 @@
       border: none;
       background: #4a76a8;
       color: #fff;
-      border-radius: 5px;
+      border-radius: 20px;
       cursor: pointer;
       transition: 0.2s;
     }
@@ -109,20 +140,22 @@
     #sendBtn:hover {
       background: #3b5f87;
     }
-
-    @media screen and (max-width: 500px) {
-      #username { display: none; }
-      #message { width: 70%; }
-    }
   </style>
 </head>
 <body>
 
 <div class="chat-container">
-  <h2>Group Chat</h2>
-  <ul id="chat"></ul>
-  <div id="form">
+  <h2>Secure Group Chat</h2>
+
+  <div id="loginForm">
     <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+    <button id="loginBtn">Login / Set User</button>
+  </div>
+
+  <ul id="chat"></ul>
+
+  <div id="form" style="display:none;">
     <input id="message" placeholder="Type your message">
     <button id="sendBtn">Send</button>
   </div>
@@ -132,14 +165,45 @@
 <script>
 const socket = io("https://tunnelling-website.onrender.com");
 const chat = document.getElementById("chat");
-const sendBtn = document.getElementById("sendBtn");
-const messageInput = document.getElementById("message");
+const loginForm = document.getElementById("loginForm");
+const loginBtn = document.getElementById("loginBtn");
 const usernameInput = document.getElementById("username");
+const passwordInput = document.getElementById("password");
+const formDiv = document.getElementById("form");
+const messageInput = document.getElementById("message");
+const sendBtn = document.getElementById("sendBtn");
 
-// Track your username to color messages differently
 let currentUser = "";
 
-// Load old messages
+// Check if user already set on this device
+const savedUser = localStorage.getItem("groupChatUser");
+const savedPass = localStorage.getItem("groupChatPass");
+
+if(savedUser && savedPass){
+  currentUser = savedUser;
+  loginForm.style.display = "none";
+  formDiv.style.display = "flex";
+}
+
+// Login / set username with password
+loginBtn.addEventListener("click", () => {
+  const user = usernameInput.value.trim();
+  const pass = passwordInput.value.trim();
+  if(!user || !pass){
+    alert("Please enter username and password!");
+    return;
+  }
+
+  // Save to localStorage so only one user per device
+  localStorage.setItem("groupChatUser", user);
+  localStorage.setItem("groupChatPass", pass);
+  currentUser = user;
+
+  loginForm.style.display = "none";
+  formDiv.style.display = "flex";
+});
+
+// Load previous messages
 socket.on("loadMessages", (messages) => {
   messages.forEach(msg => addMessage(msg));
 });
@@ -152,16 +216,15 @@ sendBtn.addEventListener("click", sendMessage);
 
 // Send message on Enter key
 messageInput.addEventListener("keyup", (e) => {
-  if (e.key === "Enter") sendMessage();
+  if(e.key === "Enter") sendMessage();
 });
 
 function sendMessage() {
-  const user = usernameInput.value.trim();
   const text = messageInput.value.trim();
-  if (!user || !text) return;
+  if(!currentUser || !text) return;
 
-  currentUser = user; // store current user
-  socket.emit("chatMessage", { user, text });
+  const timestamp = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  socket.emit("chatMessage", {user: currentUser, text, timestamp});
   messageInput.value = "";
 }
 
@@ -173,12 +236,16 @@ function addMessage(msg) {
   const usernameSpan = document.createElement("span");
   usernameSpan.classList.add("username");
   usernameSpan.textContent = msg.user;
-
   li.appendChild(usernameSpan);
 
   const textSpan = document.createElement("span");
   textSpan.textContent = msg.text;
   li.appendChild(textSpan);
+
+  const timeSpan = document.createElement("span");
+  timeSpan.classList.add("timestamp");
+  timeSpan.textContent = msg.timestamp || new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  li.appendChild(timeSpan);
 
   chat.appendChild(li);
   chat.scrollTop = chat.scrollHeight;
