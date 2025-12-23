@@ -4,42 +4,87 @@
   <title>Balaba Family 🥰🥰😍😍😘😘</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
+    /* ===== Body & Heaven Background ===== */
     body {
       font-family: Arial, sans-serif;
-      background: #e6ecf0;
       display: flex;
       justify-content: center;
       padding: 20px;
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(to top, #87ceeb, #e0f7fa, #ffffff);
+      position: relative;
     }
 
+    /* Moving clouds */
+    .cloud {
+      position: absolute;
+      background: rgba(255,255,255,0.8);
+      border-radius: 50%;
+      opacity: 0.7;
+      animation: floatClouds linear infinite;
+    }
+
+    .cloud1 { width: 200px; height: 60px; top: 10%; left: -250px; animation-duration: 80s; }
+    .cloud2 { width: 300px; height: 80px; top: 30%; left: -350px; animation-duration: 100s; }
+    .cloud3 { width: 150px; height: 50px; top: 60%; left: -200px; animation-duration: 70s; }
+
+    @keyframes floatClouds {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(130vw); }
+    }
+
+    /* Light rays overlay */
+    body::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+      pointer-events: none;
+      animation: pulse 6s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+
+    /* ===== Chat Container ===== */
     .chat-container {
       width: 100%;
       max-width: 500px;
-      background: #fff;
-      border-radius: 15px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      background: rgba(255, 255, 255, 0.85); /* see-through for heaven background */
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.2);
       display: flex;
       flex-direction: column;
       height: 75vh;
       overflow: hidden;
+      color: #333;
     }
 
     h2 {
       text-align: center;
       padding: 12px;
       margin: 0;
-      background: #4a76a8;
-      color: #fff;
-      border-top-left-radius: 15px;
-      border-top-right-radius: 15px;
-      font-size: 1.4rem;
+      background: rgba(255,255,255,0.9);
+      color: #1e88e5;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      font-size: 1.5rem;
+      text-shadow: 1px 1px 2px #fff;
     }
 
+    /* ===== Login Form ===== */
     #loginForm {
       display: flex;
       flex-direction: column;
       padding: 12px;
-      background: #fafafa;
+      background: rgba(255,255,255,0.8);
       border-bottom: 1px solid #ddd;
     }
 
@@ -59,13 +104,15 @@
       font-size: 0.95rem;
       margin-bottom: 5px;
       transition: 0.2s;
+      color: #fff;
     }
 
-    #loginBtn { background: #4a76a8; color: #fff; }
-    #loginBtn:hover { background: #3b5f87; }
-    #logoutBtn { background: #e74c3c; color: #fff; display:none; }
-    #logoutBtn:hover { background: #c0392b; }
+    #loginBtn { background: #42a5f5; }
+    #loginBtn:hover { background: #1e88e5; }
+    #logoutBtn { background: #ef5350; display:none; }
+    #logoutBtn:hover { background: #e53935; }
 
+    /* ===== Chat Box ===== */
     #chat {
       flex-grow: 1;
       list-style: none;
@@ -74,7 +121,7 @@
       display: flex;
       flex-direction: column;
       overflow-y: auto;
-      background: #f4f4f4;
+      background: rgba(255,255,255,0.4);
     }
 
     .message {
@@ -91,31 +138,20 @@
       transition: all 0.3s ease;
     }
 
-    .message.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .message.show { opacity: 1; transform: translateY(0); }
 
-    .message.user {
-      background: #dcf8c6;
-      align-self: flex-end;
-      border-bottom-right-radius: 5px;
-    }
+    .message.user { background: #bbdefb; align-self: flex-end; border-bottom-right-radius: 5px; }
+    .message.other { background: #ffe0b2; align-self: flex-start; border-bottom-left-radius: 5px; }
 
-    .message.other {
-      background: #eee;
-      align-self: flex-start;
-      border-bottom-left-radius: 5px;
-    }
+    .username { font-weight: bold; margin-bottom: 2px; display: block; color: #1976d2; }
+    .timestamp { font-size: 0.7rem; color: #555; margin-top: 2px; display: block; text-align: right; }
 
-    .username { font-weight: bold; margin-bottom: 2px; display: block; }
-    .timestamp { font-size: 0.7rem; color: #666; margin-top: 2px; display: block; text-align: right; }
-
+    /* ===== Message Input ===== */
     #form {
       display: flex;
       padding: 8px 10px;
-      border-top: 1px solid #ddd;
-      background: #fafafa;
+      border-top: 1px solid #ccc;
+      background: rgba(255,255,255,0.8);
     }
 
     #message {
@@ -130,7 +166,7 @@
     #sendBtn {
       padding: 8px 14px;
       border: none;
-      background: #4a76a8;
+      background: #42a5f5;
       color: #fff;
       border-radius: 15px;
       cursor: pointer;
@@ -138,138 +174,122 @@
       transition: 0.2s;
     }
 
-    #sendBtn:hover { background: #3b5f87; }
+    #sendBtn:hover { background: #1e88e5; }
   </style>
 </head>
 <body>
 
-<div class="chat-container">
-  <h2>Balaba Family 🥰🥰😍😍😘😘</h2>
+  <!-- Clouds for heaven effect -->
+  <div class="cloud cloud1"></div>
+  <div class="cloud cloud2"></div>
+  <div class="cloud cloud3"></div>
 
-  <div id="loginForm">
-    <input id="username" placeholder="Username">
-    <input id="password" type="password" placeholder="Password">
-    <button id="loginBtn">Login / Set User</button>
-    <button id="logoutBtn">Logout</button>
+  <div class="chat-container">
+    <h2>Balaba Family 🥰🥰😍😍😘😘</h2>
+
+    <div id="loginForm">
+      <input id="username" placeholder="Username">
+      <input id="password" type="password" placeholder="Password">
+      <button id="loginBtn">Login / Set User</button>
+      <button id="logoutBtn">Logout</button>
+    </div>
+
+    <ul id="chat"></ul>
+
+    <div id="form" style="display:none;">
+      <input id="message" placeholder="Type your message">
+      <button id="sendBtn">Send</button>
+    </div>
   </div>
 
-  <ul id="chat"></ul>
+  <script src="https://tunnelling-website.onrender.com/socket.io/socket.io.js"></script>
+  <script>
+    const SERVER_URL = "https://tunnelling-website.onrender.com";
+    const socket = io(SERVER_URL);
 
-  <div id="form" style="display:none;">
-    <input id="message" placeholder="Type your message">
-    <button id="sendBtn">Send</button>
-  </div>
-</div>
+    const chat = document.getElementById("chat");
+    const loginForm = document.getElementById("loginForm");
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
+    const formDiv = document.getElementById("form");
+    const messageInput = document.getElementById("message");
+    const sendBtn = document.getElementById("sendBtn");
 
-<script src="https://tunnelling-website.onrender.com/socket.io/socket.io.js"></script>
-<script>
-const SERVER_URL = "https://tunnelling-website.onrender.com";
-const socket = io(SERVER_URL);
+    let currentUser = "";
+    const SITE_PASSWORD = "Freedom98";
 
-const chat = document.getElementById("chat");
-const loginForm = document.getElementById("loginForm");
-const loginBtn = document.getElementById("loginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const usernameInput = document.getElementById("username");
-const passwordInput = document.getElementById("password");
-const formDiv = document.getElementById("form");
-const messageInput = document.getElementById("message");
-const sendBtn = document.getElementById("sendBtn");
+    (function askPassword(){
+      let pw = prompt("Enter website password:");
+      if(pw === null) { document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px;'>Access denied</h2>"; return; }
+      if(pw !== SITE_PASSWORD){ alert("Incorrect password!"); askPassword(); }
+    })();
 
-let currentUser = "";
-const SITE_PASSWORD = "Freedom98";
+    loginBtn.addEventListener("click", () => {
+      const user = usernameInput.value.trim();
+      const pass = passwordInput.value.trim();
+      if(!user || !pass) return alert("Enter username and password!");
+      localStorage.setItem("groupChatUser", user);
+      localStorage.setItem("groupChatPass", pass);
+      currentUser = user;
+      loginForm.style.display = "none";
+      formDiv.style.display = "flex";
+      logoutBtn.style.display = "block";
+    });
 
-// Prompt for website password before showing chat
-(function askPassword(){
-  let pw = prompt("Enter website password:");
-  if(pw === null) { // User pressed cancel
-    document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px;'>Access denied</h2>";
-    return;
-  }
-  if(pw !== SITE_PASSWORD){
-    alert("Incorrect password!");
-    askPassword(); // Retry
-  }
-})();
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("groupChatUser");
+      localStorage.removeItem("groupChatPass");
+      currentUser = "";
+      loginForm.style.display = "flex";
+      formDiv.style.display = "none";
+      logoutBtn.style.display = "none";
+    });
 
-// Chat login
-loginBtn.addEventListener("click", () => {
-  const user = usernameInput.value.trim();
-  const pass = passwordInput.value.trim();
-  if(!user || !pass) return alert("Enter username and password!");
+    socket.on("loadMessages", messages => messages.forEach(addMessage));
+    socket.on("chatMessage", addMessage);
 
-  localStorage.setItem("groupChatUser", user);
-  localStorage.setItem("groupChatPass", pass);
-  currentUser = user;
+    sendBtn.addEventListener("click", sendMessage);
+    messageInput.addEventListener("keyup", e => { if(e.key==='Enter') sendMessage(); });
 
-  loginForm.style.display = "none";
-  formDiv.style.display = "flex";
-  logoutBtn.style.display = "block";
-});
+    function sendMessage(){
+      const text = messageInput.value.trim();
+      if(!currentUser || !text) return;
+      const timestamp = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      socket.emit("chatMessage", {user: currentUser, text, timestamp});
+      messageInput.value = "";
+    }
 
-// Logout
-logoutBtn.addEventListener("click", () => {
-  localStorage.removeItem("groupChatUser");
-  localStorage.removeItem("groupChatPass");
-  currentUser = "";
-  loginForm.style.display = "flex";
-  formDiv.style.display = "none";
-  logoutBtn.style.display = "none";
-});
+    function addMessage(msg){
+      const li = document.createElement("li");
+      li.classList.add("message", msg.user===currentUser ? "user":"other");
+      if(msg.user !== currentUser){
+        const usernameSpan = document.createElement("span");
+        usernameSpan.classList.add("username");
+        usernameSpan.textContent = msg.user;
+        li.appendChild(usernameSpan);
+      }
+      const textSpan = document.createElement("span");
+      textSpan.textContent = msg.text;
+      li.appendChild(textSpan);
+      const timeSpan = document.createElement("span");
+      timeSpan.classList.add("timestamp");
+      timeSpan.textContent = msg.timestamp || new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      li.appendChild(timeSpan);
+      chat.appendChild(li);
+      chat.scrollTop = chat.scrollHeight;
+      setTimeout(() => li.classList.add("show"), 10);
+    }
 
-// Load previous messages
-socket.on("loadMessages", messages => messages.forEach(addMessage));
-
-// Receive new messages
-socket.on("chatMessage", addMessage);
-
-// Send message
-sendBtn.addEventListener("click", sendMessage);
-messageInput.addEventListener("keyup", e => { if(e.key==='Enter') sendMessage(); });
-
-function sendMessage(){
-  const text = messageInput.value.trim();
-  if(!currentUser || !text) return;
-  const timestamp = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-  socket.emit("chatMessage", {user: currentUser, text, timestamp});
-  messageInput.value = "";
-}
-
-function addMessage(msg){
-  const li = document.createElement("li");
-  li.classList.add("message", msg.user===currentUser ? "user":"other");
-
-  if(msg.user !== currentUser){
-    const usernameSpan = document.createElement("span");
-    usernameSpan.classList.add("username");
-    usernameSpan.textContent = msg.user;
-    li.appendChild(usernameSpan);
-  }
-
-  const textSpan = document.createElement("span");
-  textSpan.textContent = msg.text;
-  li.appendChild(textSpan);
-
-  const timeSpan = document.createElement("span");
-  timeSpan.classList.add("timestamp");
-  timeSpan.textContent = msg.timestamp || new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-  li.appendChild(timeSpan);
-
-  chat.appendChild(li);
-  chat.scrollTop = chat.scrollHeight;
-
-  setTimeout(() => li.classList.add("show"), 10);
-}
-
-// Restore saved user
-const savedUser = localStorage.getItem("groupChatUser");
-if(savedUser){
-  currentUser = savedUser;
-  loginForm.style.display = "none";
-  formDiv.style.display = "flex";
-  logoutBtn.style.display = "block";
-}
-</script>
+    const savedUser = localStorage.getItem("groupChatUser");
+    if(savedUser){
+      currentUser = savedUser;
+      loginForm.style.display = "none";
+      formDiv.style.display = "flex";
+      logoutBtn.style.display = "block";
+    }
+  </script>
 
 </body>
 </html>
