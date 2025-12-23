@@ -27,15 +27,10 @@
       opacity: 0.7;
       animation: floatClouds linear infinite;
     }
-
     .cloud1 { width: 200px; height: 60px; top: 10%; left: -250px; animation-duration: 80s; }
     .cloud2 { width: 300px; height: 80px; top: 30%; left: -350px; animation-duration: 100s; }
     .cloud3 { width: 150px; height: 50px; top: 60%; left: -200px; animation-duration: 70s; }
-
-    @keyframes floatClouds {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(130vw); }
-    }
+    @keyframes floatClouds { 0% { transform: translateX(0); } 100% { transform: translateX(130vw); } }
 
     /* ===== Light Rays ===== */
     body::before {
@@ -49,20 +44,16 @@
       pointer-events: none;
       animation: pulse 6s ease-in-out infinite;
     }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 0.3; }
-      50% { opacity: 0.6; }
-    }
+    @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
 
     /* ===== Chat Container ===== */
     .chat-container {
       display: flex;
       flex-direction: column;
       width: 90%;
-      max-width: 600px;
+      max-width: 700px;
       height: 90%;
-      background: rgba(255, 255, 255, 0.85);
+      background: rgba(255,255,255,0.85);
       border-radius: 20px;
       box-shadow: 0 8px 40px rgba(0,0,0,0.2);
       overflow: hidden;
@@ -89,15 +80,7 @@
       background: rgba(255,255,255,0.8);
       border-bottom: 1px solid #ddd;
     }
-
-    #loginForm input {
-      padding: 8px 10px;
-      margin-bottom: 8px;
-      border-radius: 15px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
-    }
-
+    #loginForm input { padding: 8px 10px; margin-bottom: 8px; border-radius: 15px; border: 1px solid #ccc; font-size: 1rem; }
     #loginBtn, #logoutBtn {
       padding: 10px;
       border: none;
@@ -108,15 +91,15 @@
       transition: 0.2s;
       color: #fff;
     }
-
     #loginBtn { background: #42a5f5; }
     #loginBtn:hover { background: #1e88e5; }
     #logoutBtn { background: #ef5350; display:none; }
     #logoutBtn:hover { background: #e53935; }
 
-    /* ===== Chat Box ===== */
+    /* ===== Chat & Sidebar ===== */
+    .chat-main { display: flex; flex-grow: 1; overflow:hidden; }
     #chat {
-      flex-grow: 1;
+      flex: 1;
       list-style: none;
       padding: 10px;
       margin: 0;
@@ -125,7 +108,18 @@
       overflow-y: auto;
       background: rgba(255,255,255,0.4);
     }
+    #onlineUsersSidebar {
+      width: 180px;
+      background: #e3f2fd;
+      border-radius: 10px;
+      margin-left: 8px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+    }
+    #onlineUsersSidebar strong { margin-bottom:4px; }
 
+    /* ===== Messages ===== */
     .message {
       max-width: 75%;
       margin-bottom: 10px;
@@ -139,53 +133,44 @@
       transform: translateY(20px);
       transition: all 0.3s ease;
     }
+    .message.show { opacity:1; transform: translateY(0); }
+    .message.user { background: #bbdefb; align-self: flex-end; border-bottom-right-radius:5px; }
+    .message.other { background: #ffe0b2; align-self: flex-start; border-bottom-left-radius:5px; }
+    .message.online { border: 2px solid #1e88e5; }
 
-    .message.show { opacity: 1; transform: translateY(0); }
-    .message.user { background: #bbdefb; align-self: flex-end; border-bottom-right-radius: 5px; }
-    .message.other { background: #ffe0b2; align-self: flex-start; border-bottom-left-radius: 5px; }
-
-    .username { font-weight: bold; margin-bottom: 2px; display: block; color: #1976d2; }
-    .timestamp { font-size: 0.7rem; color: #555; margin-top: 2px; display: block; text-align: right; }
+    .username { font-weight: bold; margin-bottom:2px; display:block; color:#1976d2; }
+    .timestamp { font-size:0.7rem; color:#555; margin-top:2px; display:block; text-align:right; }
 
     /* ===== Message Input ===== */
     #form {
       display: flex;
       padding: 8px;
-      border-top: 1px solid #ccc;
+      border-top:1px solid #ccc;
       background: rgba(255,255,255,0.8);
     }
-
     #message {
       flex-grow: 1;
-      padding: 10px;
-      border-radius: 15px;
-      border: 1px solid #ccc;
-      margin-right: 8px;
-      font-size: 1rem;
+      padding:10px;
+      border-radius:15px;
+      border:1px solid #ccc;
+      margin-right:8px;
+      font-size:1rem;
     }
-
     #sendBtn {
-      padding: 10px 16px;
-      border: none;
-      background: #42a5f5;
-      color: #fff;
-      border-radius: 15px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: 0.2s;
+      padding:10px 16px;
+      border:none;
+      background:#42a5f5;
+      color:#fff;
+      border-radius:15px;
+      cursor:pointer;
+      font-size:1rem;
+      transition:0.2s;
     }
+    #sendBtn:hover { background:#1e88e5; }
 
-    #sendBtn:hover { background: #1e88e5; }
-
-    /* ===== Responsive adjustments ===== */
-    @media(max-width: 768px){
-      .chat-container { width: 95%; height: 90%; }
-      #loginForm input, #message { font-size: 0.9rem; }
-      #loginBtn, #logoutBtn, #sendBtn { font-size: 0.9rem; padding: 8px; }
-    }
-    @media(max-width: 480px){
-      .chat-container { width: 100%; height: 95%; border-radius: 10px; }
-    }
+    /* ===== Responsive ===== */
+    @media(max-width:768px){ .chat-container { width:95%; height:90%; } #loginForm input,#message{font-size:0.9rem;} #loginBtn,#logoutBtn,#sendBtn{font-size:0.9rem;padding:8px;} }
+    @media(max-width:480px){ .chat-container { width:100%; height:95%; border-radius:10px; } }
   </style>
 </head>
 <body>
@@ -205,7 +190,13 @@
       <button id="logoutBtn">Logout</button>
     </div>
 
-    <ul id="chat"></ul>
+    <div class="chat-main">
+      <ul id="chat"></ul>
+      <div id="onlineUsersSidebar">
+        <strong>Online Users</strong>
+        <ul id="usersList" style="list-style:none; padding-left:0; margin:0;"></ul>
+      </div>
+    </div>
 
     <div id="form" style="display:none;">
       <input id="message" placeholder="Type your message">
@@ -227,16 +218,19 @@
     const formDiv = document.getElementById("form");
     const messageInput = document.getElementById("message");
     const sendBtn = document.getElementById("sendBtn");
+    const usersList = document.getElementById("usersList");
 
     let currentUser = "";
+    let onlineUsersArr = [];
     const SITE_PASSWORD = "Freedom98";
 
     (function askPassword(){
       let pw = prompt("Enter website password:");
-      if(pw === null) { document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px;'>Access denied</h2>"; return; }
-      if(pw !== SITE_PASSWORD){ alert("Incorrect password!"); askPassword(); }
+      if(pw===null){ document.body.innerHTML="<h2 style='text-align:center;margin-top:50px;'>Access denied</h2>"; return; }
+      if(pw!==SITE_PASSWORD){ alert("Incorrect password!"); askPassword(); }
     })();
 
+    // Login
     loginBtn.addEventListener("click", () => {
       const user = usernameInput.value.trim();
       const pass = passwordInput.value.trim();
@@ -244,61 +238,87 @@
       localStorage.setItem("groupChatUser", user);
       localStorage.setItem("groupChatPass", pass);
       currentUser = user;
-      loginForm.style.display = "none";
-      formDiv.style.display = "flex";
-      logoutBtn.style.display = "block";
+      loginForm.style.display="none";
+      formDiv.style.display="flex";
+      logoutBtn.style.display="block";
+
+      socket.emit("login", currentUser);
     });
 
-    logoutBtn.addEventListener("click", () => {
+    // Logout
+    logoutBtn.addEventListener("click", ()=>{
       localStorage.removeItem("groupChatUser");
       localStorage.removeItem("groupChatPass");
-      currentUser = "";
-      loginForm.style.display = "flex";
-      formDiv.style.display = "none";
-      logoutBtn.style.display = "none";
+      currentUser="";
+      loginForm.style.display="flex";
+      formDiv.style.display="none";
+      logoutBtn.style.display="none";
     });
 
-    socket.on("loadMessages", messages => messages.forEach(addMessage));
+    // Load messages
+    socket.on("loadMessages", messages=>messages.forEach(addMessage));
     socket.on("chatMessage", addMessage);
 
+    // Online users update
+    socket.on("onlineUsers", users=>{
+      onlineUsersArr=users;
+      usersList.innerHTML="";
+      users.forEach(user=>{
+        const li=document.createElement("li");
+        li.textContent=user;
+        if(user===currentUser) li.style.fontWeight="bold";
+        usersList.appendChild(li);
+      });
+      // Highlight messages from online users
+      document.querySelectorAll(".message.other").forEach(msgEl=>{
+        const username = msgEl.querySelector(".username")?.textContent;
+        if(username && onlineUsersArr.includes(username)) msgEl.classList.add("online");
+        else msgEl.classList.remove("online");
+      });
+    });
+
+    // Send message
     sendBtn.addEventListener("click", sendMessage);
-    messageInput.addEventListener("keyup", e => { if(e.key==='Enter') sendMessage(); });
+    messageInput.addEventListener("keyup", e=>{ if(e.key==='Enter') sendMessage(); });
 
     function sendMessage(){
       const text = messageInput.value.trim();
       if(!currentUser || !text) return;
       const timestamp = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
       socket.emit("chatMessage", {user: currentUser, text, timestamp});
-      messageInput.value = "";
+      messageInput.value="";
     }
 
     function addMessage(msg){
-      const li = document.createElement("li");
-      li.classList.add("message", msg.user===currentUser ? "user":"other");
-      if(msg.user !== currentUser){
-        const usernameSpan = document.createElement("span");
+      const li=document.createElement("li");
+      li.classList.add("message", msg.user===currentUser?"user":"other");
+      if(msg.user!==currentUser){
+        const usernameSpan=document.createElement("span");
         usernameSpan.classList.add("username");
-        usernameSpan.textContent = msg.user;
+        usernameSpan.textContent=msg.user;
         li.appendChild(usernameSpan);
+        if(onlineUsersArr.includes(msg.user)) li.classList.add("online");
       }
-      const textSpan = document.createElement("span");
-      textSpan.textContent = msg.text;
+      const textSpan=document.createElement("span");
+      textSpan.textContent=msg.text;
       li.appendChild(textSpan);
-      const timeSpan = document.createElement("span");
+      const timeSpan=document.createElement("span");
       timeSpan.classList.add("timestamp");
-      timeSpan.textContent = msg.timestamp || new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      timeSpan.textContent=msg.timestamp || new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
       li.appendChild(timeSpan);
       chat.appendChild(li);
-      chat.scrollTop = chat.scrollHeight;
-      setTimeout(() => li.classList.add("show"), 10);
+      chat.scrollTop=chat.scrollHeight;
+      setTimeout(()=>li.classList.add("show"),10);
     }
 
+    // Restore user if saved
     const savedUser = localStorage.getItem("groupChatUser");
     if(savedUser){
-      currentUser = savedUser;
-      loginForm.style.display = "none";
-      formDiv.style.display = "flex";
-      logoutBtn.style.display = "block";
+      currentUser=savedUser;
+      loginForm.style.display="none";
+      formDiv.style.display="flex";
+      logoutBtn.style.display="block";
+      socket.emit("login", currentUser);
     }
   </script>
 </body>
