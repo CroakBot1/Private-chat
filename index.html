@@ -75,80 +75,79 @@
       background: rgba(255,255,255,0.8);
       border-bottom: 1px solid #ddd;
     }
-    #loginForm input { padding:8px 10px; margin-bottom:8px; border-radius:15px; border:1px solid #ccc; font-size:1rem; }
+    #loginForm input { padding: 8px 10px; margin-bottom: 8px; border-radius: 15px; border: 1px solid #ccc; font-size:1rem; }
     #loginBtn, #logoutBtn {
-      padding: 10px;
-      border: none;
-      border-radius: 15px;
-      cursor: pointer;
-      font-size: 1rem;
-      margin-bottom: 5px;
-      transition: 0.2s;
-      color: #fff;
+      padding:10px;
+      border:none;
+      border-radius:15px;
+      cursor:pointer;
+      font-size:1rem;
+      margin-bottom:5px;
+      color:#fff;
+      transition:0.2s;
     }
-    #loginBtn { background: #42a5f5; }
-    #loginBtn:hover { background: #1e88e5; }
-    #logoutBtn { background: #ef5350; display:none; }
-    #logoutBtn:hover { background: #e53935; }
+    #loginBtn{background:#42a5f5;}
+    #loginBtn:hover{background:#1e88e5;}
+    #logoutBtn{background:#ef5350;display:none;}
+    #logoutBtn:hover{background:#e53935;}
 
     #chat {
-      flex: 1;
-      list-style: none;
-      padding: 10px;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
+      flex:1;
+      list-style:none;
+      padding:10px;
+      margin:0;
+      display:flex;
+      flex-direction:column;
+      overflow-y:auto;
       background: rgba(255,255,255,0.4);
     }
 
     .message {
-      max-width: 75%;
-      margin-bottom: 10px;
-      padding: 8px 12px;
-      border-radius: 15px;
+      max-width:75%;
+      margin-bottom:10px;
+      padding:8px 12px;
+      border-radius:15px;
       word-wrap: break-word;
-      display: inline-block;
-      clear: both;
-      font-size: 0.9rem;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.3s ease;
-      position: relative;
+      display:inline-block;
+      clear:both;
+      font-size:0.9rem;
+      opacity:0;
+      transform:translateY(20px);
+      transition:all 0.3s ease;
+      position:relative;
     }
     .message.show { opacity:1; transform:translateY(0); }
-    .message.user { background: #bbdefb; align-self:flex-end; border-bottom-right-radius:5px; }
-    .message.other { background: #ffe0b2; align-self:flex-start; border-bottom-left-radius:5px; }
+    .message.user { background:#bbdefb; align-self:flex-end; border-bottom-right-radius:5px; }
+    .message.other{ background:#ffe0b2; align-self:flex-start; border-bottom-left-radius:5px; }
 
-    /* Blinking green indicator for online users */
+    /* Responsive online indicator */
     .online-indicator {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #00ff00;
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      animation: blink 1s infinite;
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:#00ff00;
+      position:absolute;
+      top:-5px;
+      right:-5px;
+      animation: blink 0.8s infinite;
     }
-    @keyframes blink {
-      0%, 50%, 100% { opacity: 1; }
-      25%, 75% { opacity: 0; }
+    @keyframes blink{
+      0%,50%,100%{opacity:1;}
+      25%,75%{opacity:0;}
     }
 
-    .username { font-weight:bold; margin-bottom:2px; display:block; color:#1976d2; }
-    .timestamp { font-size:0.7rem; color:#555; margin-top:2px; display:block; text-align:right; }
+    .username{ font-weight:bold; margin-bottom:2px; display:block; color:#1976d2;}
+    .timestamp{ font-size:0.7rem; color:#555; margin-top:2px; display:block; text-align:right;}
 
-    #form {
+    #form{
       display:flex;
       padding:8px;
       border-top:1px solid #ccc;
-      background: rgba(255,255,255,0.8);
+      background:rgba(255,255,255,0.8);
     }
-    #message { flex-grow:1; padding:10px; border-radius:15px; border:1px solid #ccc; margin-right:8px; font-size:1rem; }
-    #sendBtn { padding:10px 16px; border:none; background:#42a5f5; color:#fff; border-radius:15px; cursor:pointer; font-size:1rem; transition:0.2s; }
-    #sendBtn:hover { background:#1e88e5; }
-
+    #message{ flex-grow:1; padding:10px; border-radius:15px; border:1px solid #ccc; margin-right:8px; font-size:1rem;}
+    #sendBtn{ padding:10px 16px; border:none; background:#42a5f5; color:#fff; border-radius:15px; cursor:pointer; font-size:1rem; transition:0.2s;}
+    #sendBtn:hover{background:#1e88e5;}
   </style>
 </head>
 <body>
@@ -177,41 +176,40 @@
 
   <script src="https://tunnelling-website.onrender.com/socket.io/socket.io.js"></script>
   <script>
-    const SERVER_URL = "https://tunnelling-website.onrender.com";
-    const socket = io(SERVER_URL);
+    const SERVER_URL="https://tunnelling-website.onrender.com";
+    const socket=io(SERVER_URL);
 
-    const chat = document.getElementById("chat");
-    const loginForm = document.getElementById("loginForm");
-    const loginBtn = document.getElementById("loginBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const usernameInput = document.getElementById("username");
-    const passwordInput = document.getElementById("password");
-    const formDiv = document.getElementById("form");
-    const messageInput = document.getElementById("message");
-    const sendBtn = document.getElementById("sendBtn");
+    const chat=document.getElementById("chat");
+    const loginForm=document.getElementById("loginForm");
+    const loginBtn=document.getElementById("loginBtn");
+    const logoutBtn=document.getElementById("logoutBtn");
+    const usernameInput=document.getElementById("username");
+    const passwordInput=document.getElementById("password");
+    const formDiv=document.getElementById("form");
+    const messageInput=document.getElementById("message");
+    const sendBtn=document.getElementById("sendBtn");
 
-    let currentUser = "";
-    let onlineUsersArr = [];
-    const SITE_PASSWORD = "Freedom98";
+    let currentUser="";
+    let onlineUsersArr=[];
+    const SITE_PASSWORD="Freedom98";
 
     (function askPassword(){
-      let pw = prompt("Enter website password:");
+      let pw=prompt("Enter website password:");
       if(pw===null){ document.body.innerHTML="<h2 style='text-align:center;margin-top:50px;'>Access denied</h2>"; return; }
       if(pw!==SITE_PASSWORD){ alert("Incorrect password!"); askPassword(); }
     })();
 
-    loginBtn.addEventListener("click", () => {
-      const user = usernameInput.value.trim();
-      const pass = passwordInput.value.trim();
-      if(!user || !pass) return alert("Enter username and password!");
-      localStorage.setItem("groupChatUser", user);
-      localStorage.setItem("groupChatPass", pass);
-      currentUser = user;
+    loginBtn.addEventListener("click", ()=>{
+      const user=usernameInput.value.trim();
+      const pass=passwordInput.value.trim();
+      if(!user||!pass) return alert("Enter username and password!");
+      localStorage.setItem("groupChatUser",user);
+      localStorage.setItem("groupChatPass",pass);
+      currentUser=user;
       loginForm.style.display="none";
       formDiv.style.display="flex";
       logoutBtn.style.display="block";
-
-      socket.emit("login", currentUser);
+      socket.emit("login",currentUser);
     });
 
     logoutBtn.addEventListener("click", ()=>{
@@ -223,21 +221,22 @@
       logoutBtn.style.display="none";
     });
 
-    socket.on("loadMessages", messages=>messages.forEach(addMessage));
-    socket.on("chatMessage", addMessage);
+    socket.on("loadMessages",messages=>messages.forEach(addMessage));
+    socket.on("chatMessage",addMessage);
 
+    // Online users update (responsive)
     socket.on("onlineUsers", users=>{
-      onlineUsersArr = users;
+      onlineUsersArr=users;
       document.querySelectorAll(".message.other").forEach(msgEl=>{
-        const username = msgEl.querySelector(".username")?.textContent;
+        const username=msgEl.querySelector(".username")?.textContent;
         if(username && onlineUsersArr.includes(username)){
           if(!msgEl.querySelector(".online-indicator")){
-            const indicator = document.createElement("div");
+            const indicator=document.createElement("div");
             indicator.classList.add("online-indicator");
             msgEl.appendChild(indicator);
           }
         } else {
-          const indicator = msgEl.querySelector(".online-indicator");
+          const indicator=msgEl.querySelector(".online-indicator");
           if(indicator) indicator.remove();
         }
       });
@@ -247,49 +246,49 @@
     messageInput.addEventListener("keyup", e=>{ if(e.key==='Enter') sendMessage(); });
 
     function sendMessage(){
-      const text = messageInput.value.trim();
-      if(!currentUser || !text) return;
-      const timestamp = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-      socket.emit("chatMessage", {user: currentUser, text, timestamp});
+      const text=messageInput.value.trim();
+      if(!currentUser||!text) return;
+      const timestamp=new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      socket.emit("chatMessage",{user:currentUser,text,timestamp});
       messageInput.value="";
     }
 
     function addMessage(msg){
-      const li = document.createElement("li");
+      const li=document.createElement("li");
       li.classList.add("message", msg.user===currentUser?"user":"other");
       if(msg.user!==currentUser){
-        const usernameSpan = document.createElement("span");
+        const usernameSpan=document.createElement("span");
         usernameSpan.classList.add("username");
-        usernameSpan.textContent = msg.user;
+        usernameSpan.textContent=msg.user;
         li.appendChild(usernameSpan);
 
         if(onlineUsersArr.includes(msg.user)){
-          const indicator = document.createElement("div");
+          const indicator=document.createElement("div");
           indicator.classList.add("online-indicator");
           li.appendChild(indicator);
         }
       }
-      const textSpan = document.createElement("span");
-      textSpan.textContent = msg.text;
+      const textSpan=document.createElement("span");
+      textSpan.textContent=msg.text;
       li.appendChild(textSpan);
 
-      const timeSpan = document.createElement("span");
+      const timeSpan=document.createElement("span");
       timeSpan.classList.add("timestamp");
-      timeSpan.textContent = msg.timestamp || new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      timeSpan.textContent=msg.timestamp || new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
       li.appendChild(timeSpan);
 
       chat.appendChild(li);
-      chat.scrollTop = chat.scrollHeight;
+      chat.scrollTop=chat.scrollHeight;
       setTimeout(()=>li.classList.add("show"),10);
     }
 
-    const savedUser = localStorage.getItem("groupChatUser");
+    const savedUser=localStorage.getItem("groupChatUser");
     if(savedUser){
-      currentUser = savedUser;
+      currentUser=savedUser;
       loginForm.style.display="none";
       formDiv.style.display="flex";
       logoutBtn.style.display="block";
-      socket.emit("login", currentUser);
+      socket.emit("login",currentUser);
     }
   </script>
 </body>
