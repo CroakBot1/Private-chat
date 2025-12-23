@@ -51,10 +51,10 @@
     #loginBtn{background:#42a5f5;}#loginBtn:hover{background:#1e88e5;}#logoutBtn{background:#ef5350;display:none;}#logoutBtn:hover{background:#e53935;}
 
     /* Chat messages */
-    #chat{flex:1;list-style:none;padding:20px;margin:0;display:flex;flex-direction:column;overflow-y:auto;background:rgba(255,255,255,0.35);backdrop-filter:blur(12px);position:relative;}
-    .message{max-width:75%;margin-bottom:14px;padding:12px 18px;border-radius:30px;word-wrap:break-word;display:inline-block;clear:both;font-size:1rem;opacity:0;transform:translateY(20px);transition:all 0.5s ease, box-shadow 0.5s ease;position:relative;box-shadow:0 8px 35px rgba(0,0,0,0.08),0 0 25px rgba(255,255,255,0.4) inset;
+    #chat{flex:1;list-style:none;padding:20px;margin:0;display:flex;flex-direction:column;overflow-y:auto;background:rgba(255,255,255,0.35);backdrop-filter:blur(12px);position:relative;scroll-behavior:smooth;}
+    .message{max-width:75%;margin-bottom:14px;padding:12px 18px;border-radius:30px;word-wrap:break-word;display:inline-block;clear:both;font-size:1rem;opacity:0;transform:translateY(20px);transition:all 0.3s ease, box-shadow 0.3s ease;position:relative;box-shadow:0 8px 35px rgba(0,0,0,0.08),0 0 25px rgba(255,255,255,0.4) inset;
       background:linear-gradient(135deg,#ff9a9e,#fad0c4,#a1c4fd,#c2e9fb);background-size:400% 400%;animation:floatMessage 4s ease-in-out infinite,rainbowBG 8s ease infinite;}
-    @keyframes floatMessage{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+    @keyframes floatMessage{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
     @keyframes rainbowBG{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
     .message.show{opacity:1;transform:translateY(0);}
     .message.user{align-self:flex-end;border-bottom-right-radius:5px;}
@@ -187,7 +187,6 @@ function addMessage(msg){
   li.appendChild(timeSpan);
 
   chat.appendChild(li);
-  chat.scrollTop=chat.scrollHeight;
 
   setTimeout(()=>{
     li.classList.add("show");
@@ -200,24 +199,23 @@ function addMessage(msg){
       setTimeout(()=>sparkle.remove(), 3500);
     }
     updateOnlineIndicators();
+
+    // Smooth scroll to latest message
+    li.scrollIntoView({behavior:'smooth', block:'end'});
   },10);
 }
 
 function updateOnlineIndicators(){
-  // Remove all previous indicators first
   document.querySelectorAll(".online-indicator").forEach(e=>e.remove());
-
-  // Find last message from each online user
   const messages = document.querySelectorAll(".message");
   for(const user of onlineUsersArr){
     for(let i=messages.length-1;i>=0;i--){
       const msgEl=messages[i];
       if(msgEl.classList.contains(user==='user'? 'user' : 'other')){
-        // Add online indicator
         const indicator=document.createElement("div");
         indicator.classList.add("online-indicator");
         msgEl.appendChild(indicator);
-        break; // Only on last message
+        break;
       }
     }
   }
