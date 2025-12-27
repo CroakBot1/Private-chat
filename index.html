@@ -4,45 +4,57 @@
 <meta charset="UTF-8">
 <title>FPS Auto-Lock PWA</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Manifest -->
-<link rel="manifest" href="manifest.json">
+
+<!-- Manifest inline -->
+<link rel="manifest" href="data:application/manifest+json,{ 
+  'name':'FPS Auto-Lock PWA',
+  'short_name':'AutoLock',
+  'start_url':'.',
+  'display':'standalone',
+  'background_color':'#000000',
+  'theme_color':'#0f0',
+  'icons':[{'src':'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJ
+bWFnZVJlYWR5ccllPAAAADJJREFUeNpi/P//PwMlgImBQjDwH4kHkF4nIkgQAiACBxD6KJAZAGgACDAAFbOkzRqlBAAAAAElFTkSuQmCC','sizes':'32x32','type':'image/png'}]
+}">
+
 <style>
-  body { margin:0; background:#000; font-family:Arial; color:#0f0; overflow:hidden; text-align:center; }
-  #hud { position: fixed; top:10px; left:10px; font-size:14px; }
-  #staminaBox { position: fixed; bottom:20px; left:50%; transform:translateX(-50%); width:200px; height:12px; border:1px solid #0f0; }
-  #stamina { height:100%; background:#0f0; }
-  button { font-size:20px; padding:15px 30px; margin:10px; background:#0f0; color:#000; border:none; cursor:pointer; }
-  button:hover { background:#0c0; }
-  canvas { display:block; }
+body { margin:0; background:#000; font-family:Arial; color:#0f0; overflow:hidden; text-align:center; }
+#hud { position: fixed; top:10px; left:10px; font-size:14px; }
+#staminaBox { position: fixed; bottom:20px; left:50%; transform:translateX(-50%); width:200px; height:12px; border:1px solid #0f0; }
+#stamina { height:100%; background:#0f0; }
+button { font-size:20px; padding:15px 30px; margin:10px; background:#0f0; color:#000; border:none; cursor:pointer; }
+button:hover { background:#0c0; }
+canvas { display:block; }
 </style>
 </head>
 <body>
 
 <h1>FPS Auto-Lock PWA</h1>
 <p>Installable Auto-Lock App</p>
-<a id="downloadBtn"><button>Install App</button></a>
+<button id="installBtn" style="display:none;">Install App</button>
 
 <div id="hud"></div>
 <div id="staminaBox"><div id="stamina"></div></div>
 <canvas id="game"></canvas>
 
 <script>
-// ===== PWA INSTALL PROMPT =====
+// ===== PWA INSTALL =====
 let deferredPrompt;
-const downloadBtn = document.getElementById('downloadBtn');
+const installBtn = document.getElementById('installBtn');
 
-window.addEventListener('beforeinstallprompt', (e) => {
+window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
-  downloadBtn.style.display = 'inline-block';
+  installBtn.style.display = 'inline-block';
 });
 
-downloadBtn.addEventListener('click', async () => {
+installBtn.addEventListener('click', async () => {
   if(deferredPrompt){
     deferredPrompt.prompt();
     const choice = await deferredPrompt.userChoice;
     if(choice.outcome === 'accepted') console.log('App installed');
     deferredPrompt = null;
+    installBtn.style.display = 'none';
   }
 });
 
@@ -77,7 +89,8 @@ function update(dt){
   player.vx = Math.max(-max, Math.min(max, player.vx));
   player.vy = Math.max(-max, Math.min(max, player.vy));
   player.x += player.vx; player.y += player.vy;
-  player.vx *= player.friction; player.vy *= player.friction;
+  player.vx *= player.friction;
+  player.vy *= player.friction;
   player.x = Math.max(0, Math.min(canvas.width, player.x));
   player.y = Math.max(0, Math.min(canvas.height, player.y));
 
@@ -145,9 +158,16 @@ function loop(t){
 }
 loop(last);
 
-// ===== REGISTER SERVICE WORKER =====
+// ===== SERVICE WORKER INLINE =====
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').then(()=>console.log('Service Worker Registered'));
+  const swCode = `
+    const CACHE_NAME = 'fps-autolock-v1';
+    const urlsToCache = ['.'];
+    self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(urlsToCache))); });
+    self.addEventListener('fetch', e => { e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))); });
+  `;
+  const blob = new Blob([swCode], {type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).then(()=>console.log('Service Worker Registered'));
 }
 </script>
 
