@@ -4,19 +4,8 @@
 <meta charset="UTF-8">
 <title>FPS Auto-Lock PWA</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- Manifest inline -->
-<link rel="manifest" href="data:application/manifest+json,{ 
-  'name':'FPS Auto-Lock PWA',
-  'short_name':'AutoLock',
-  'start_url':'.',
-  'display':'standalone',
-  'background_color':'#000000',
-  'theme_color':'#0f0',
-  'icons':[{'src':'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJ
-bWFnZVJlYWR5ccllPAAAADJJREFUeNpi/P//PwMlgImBQjDwH4kHkF4nIkgQAiACBxD6KJAZAGgACDAAFbOkzRqlBAAAAAElFTkSuQmCC','sizes':'32x32','type':'image/png'}]
-}">
-
+<!-- Manifest gikan sa live server -->
+<link rel="manifest" href="https://tunnelling-website.onrender.com/manifest.json">
 <style>
 body { margin:0; background:#000; font-family:Arial; color:#0f0; overflow:hidden; text-align:center; }
 #hud { position: fixed; top:10px; left:10px; font-size:14px; }
@@ -31,30 +20,27 @@ canvas { display:block; }
 
 <h1>FPS Auto-Lock PWA</h1>
 <p>Installable Auto-Lock App</p>
-<button id="installBtn" style="display:none;">Install App</button>
+<a id="downloadBtn"><button>Install App</button></a>
 
 <div id="hud"></div>
 <div id="staminaBox"><div id="stamina"></div></div>
 <canvas id="game"></canvas>
 
 <script>
-// ===== PWA INSTALL =====
+// ===== PWA INSTALL PROMPT =====
 let deferredPrompt;
-const installBtn = document.getElementById('installBtn');
-
+const downloadBtn = document.getElementById('downloadBtn');
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
-  installBtn.style.display = 'inline-block';
+  downloadBtn.style.display = 'inline-block';
 });
-
-installBtn.addEventListener('click', async () => {
+downloadBtn.addEventListener('click', async () => {
   if(deferredPrompt){
     deferredPrompt.prompt();
     const choice = await deferredPrompt.userChoice;
     if(choice.outcome === 'accepted') console.log('App installed');
     deferredPrompt = null;
-    installBtn.style.display = 'none';
   }
 });
 
@@ -88,7 +74,8 @@ function update(dt){
 
   player.vx = Math.max(-max, Math.min(max, player.vx));
   player.vy = Math.max(-max, Math.min(max, player.vy));
-  player.x += player.vx; player.y += player.vy;
+  player.x += player.vx;
+  player.y += player.vy;
   player.vx *= player.friction;
   player.vy *= player.friction;
   player.x = Math.max(0, Math.min(canvas.width, player.x));
@@ -158,18 +145,11 @@ function loop(t){
 }
 loop(last);
 
-// ===== SERVICE WORKER INLINE =====
+// Register Service Worker gikan sa live server
 if('serviceWorker' in navigator){
-  const swCode = `
-    const CACHE_NAME = 'fps-autolock-v1';
-    const urlsToCache = ['.'];
-    self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(urlsToCache))); });
-    self.addEventListener('fetch', e => { e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))); });
-  `;
-  const blob = new Blob([swCode], {type:'application/javascript'});
-  navigator.serviceWorker.register(URL.createObjectURL(blob)).then(()=>console.log('Service Worker Registered'));
+  navigator.serviceWorker.register('https://tunnelling-website.onrender.com/sw.js')
+  .then(()=>console.log('Service Worker Registered'));
 }
 </script>
-
 </body>
 </html>
