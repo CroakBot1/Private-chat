@@ -3,10 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultimate PWA App</title>
-
-<!-- Manifest -->
-<link rel="manifest" href="manifest.json">
+<title>Ultimate Single-file PWA</title>
 
 <!-- Inline CSS -->
 <style>
@@ -34,18 +31,14 @@ button {
   color: white;
   transition: background-color 0.3s;
 }
-button:hover {
-  background-color: #45a049;
-}
-.dark-mode {
-  background-color: #121212;
-  color: #f0f0f0;
-}
+button:hover { background-color: #45a049; }
+.dark-mode { background-color: #121212; color: #f0f0f0; }
 </style>
+
 </head>
 <body>
 <div class="container">
-  <h1>Ultimate PWA App!</h1>
+  <h1>Ultimate Single-file PWA</h1>
   <button id="clickBtn">Click Me</button>
   <button id="darkModeBtn">Toggle Dark Mode</button>
   <p id="status">App is fully offline!</p>
@@ -53,35 +46,54 @@ button:hover {
 
 <!-- Inline JS -->
 <script>
-// Button click
+// Button functionality
 document.getElementById('clickBtn').addEventListener('click', () => {
   alert('Hello! This works offline!');
 });
-
-// Dark mode toggle
 document.getElementById('darkModeBtn').addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
-  const status = document.getElementById('status');
-  status.textContent = document.body.classList.contains('dark-mode') ? 
-    'Dark Mode ON' : 'Dark Mode OFF';
+  document.getElementById('status').textContent = document.body.classList.contains('dark-mode') ? 'Dark Mode ON' : 'Dark Mode OFF';
 });
 
-// Inline Service Worker
+// Inline Manifest as JS Object (for Chrome Android)
+const manifest = {
+  "name": "Ultimate Single-file PWA",
+  "short_name": "SinglePWA",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4CAF50",
+  "icons": [
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABe0lEQVRYR+2VvQ2DMAyF3zJH6yZ7iBg0G+7B2Y30H1lBO0MVGvRSl5ZgDdw1XnQUY2Cw8V9wXLpQ4D0J0KYr8hOEHkqgQQn6wMc+J5izA6qZ5vBlDGzB06jYACw0AAazf9gOaOxzABzlyM6sABmQLgPONZ+BkywSAKy2CN/8ZwAyshLAr2/hY91AzgOQBb0JcYg3FZABOANqLhDg4MAQnwCk7AAHkkmFvP7yBsUHyZMP9yEQO6JXyW+ID5G8ZqVUgN3oXkMf8mS89N6qq2vG2jG2Y+02s62I0qG1ofRnLZf2cXKZv+VxoWkRRLOF4wlTQAipmJ+rnDnyjpmAA/gIG0Km1PQ6bx9UspqGZlkuqkHuS9Rt8QDdL7Bb/5k1nru8YyEAAAAASUVORK5CYII=",
+      "sizes": "32x32",
+      "type": "image/png"
+    }
+  ]
+};
+
+// Inject manifest dynamically
+const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+const manifestURL = URL.createObjectURL(manifestBlob);
+const link = document.createElement('link');
+link.rel = 'manifest';
+link.href = manifestURL;
+document.head.appendChild(link);
+
+// Inline service worker
 const swCode = `
-const CACHE_NAME = 'ultimate-pwa-cache-v1';
-const ASSETS = ['./','./index.html','./manifest.json','./icon.png'];
+const CACHE_NAME = 'single-file-pwa-v1';
+const ASSETS = ['./'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
-  );
+  e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
 });
+
 self.addEventListener('fetch', e => {
   e.respondWith(caches.match(e.request).then(resp => resp || fetch(e.request)));
 });
 `;
 
-// Register inline service worker
 if ('serviceWorker' in navigator) {
   const blob = new Blob([swCode], { type: 'application/javascript' });
   const swUrl = URL.createObjectURL(blob);
