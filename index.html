@@ -10,6 +10,7 @@ body { font-family: Arial; text-align:center; margin:50px; background:#f0f0f0; }
 button { padding:10px 20px; font-size:18px; margin:10px; cursor:pointer; border:none; border-radius:5px; background:#4CAF50; color:white; }
 button:hover { background:#45a049; }
 #installBtn { display:none; }
+.dark-mode { background:#121212; color:#f0f0f0; }
 </style>
 </head>
 <body>
@@ -29,7 +30,7 @@ document.getElementById('darkModeBtn').addEventListener('click', () => {
 // Click button
 document.getElementById('clickBtn').addEventListener('click', () => alert('Hello! This works offline!'));
 
-// Install button
+// Install button logic
 let deferredPrompt;
 const installBtn = document.getElementById('installBtn');
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -41,10 +42,9 @@ installBtn.addEventListener('click', async () => {
   installBtn.style.display = 'none';
   if (deferredPrompt) {
     deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(choiceResult => {
-      console.log('User choice: ', choiceResult.outcome);
-      deferredPrompt = null;
-    });
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log('User choice: ', outcome);
+    deferredPrompt = null;
   }
 });
 
