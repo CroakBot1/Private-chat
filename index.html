@@ -148,7 +148,8 @@ loop(last);
 // Register Service Worker gikan sa live server
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('https://tunnelling-website.onrender.com/sw.js')
-  .then(()=>console.log('Service Worker Registered'));
+  .then(()=>console.log('Service Worker Registered'))
+  .catch(err => console.log('SW Error:', err));
 }
 </script>
 </body>
