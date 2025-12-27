@@ -1,12 +1,18 @@
 {
+  "id": "/",
   "name": "Private Chat PWA",
   "short_name": "ChatPWA",
-  "description": "Offline installable PWA",
+  "description": "Offline installable private chat progressive web app.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
-  "id": "/",
+
+  "orientation": "portrait",
+
+  "categories": ["communication", "productivity"],
+
   "icons": [
     {
       "src": "/icon-192.png",
@@ -18,5 +24,15 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+
+  "screenshots": [
+    {
+      "src": "/screenshot1.png",
+      "sizes": "540x720",
+      "type": "image/png"
+    }
+  ],
+
+  "prefer_related_applications": false
 }
