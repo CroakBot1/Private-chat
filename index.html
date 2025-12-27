@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultimate Single-file PWA</title>
+<title>Private Chat PWA</title>
 
 <!-- Inline CSS -->
 <style>
@@ -32,19 +32,19 @@ button {
   transition: background-color 0.3s;
 }
 button:hover { background-color: #45a049; }
+#installBtn { display: none; }
 .dark-mode { background-color: #121212; color: #f0f0f0; }
 </style>
-
 </head>
 <body>
 <div class="container">
-  <h1>Ultimate Single-file PWA</h1>
+  <h1>Private Chat PWA</h1>
   <button id="clickBtn">Click Me</button>
   <button id="darkModeBtn">Toggle Dark Mode</button>
+  <button id="installBtn">Install App</button>
   <p id="status">App is fully offline!</p>
 </div>
 
-<!-- Inline JS -->
 <script>
 // Button functionality
 document.getElementById('clickBtn').addEventListener('click', () => {
@@ -55,10 +55,37 @@ document.getElementById('darkModeBtn').addEventListener('click', () => {
   document.getElementById('status').textContent = document.body.classList.contains('dark-mode') ? 'Dark Mode ON' : 'Dark Mode OFF';
 });
 
-// Inline Manifest as JS Object (for Chrome Android)
+// --------------------
+// Install Button Logic
+// --------------------
+let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent Chrome 67+ default mini-infobar
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.style.display = 'inline-block'; // Show install button
+});
+
+installBtn.addEventListener('click', async () => {
+  installBtn.style.display = 'none';
+  if (deferredPrompt) {
+    deferredPrompt.prompt(); // Show native install prompt
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response to install: ${outcome}`);
+    deferredPrompt = null;
+  }
+});
+
+// --------------------
+// Inline manifest as JS Blob
+// --------------------
 const manifest = {
-  "name": "Ultimate Single-file PWA",
-  "short_name": "SinglePWA",
+  "id": "/private-chat-app",
+  "name": "Private Chat App",
+  "short_name": "ChatApp",
+  "description": "A secure offline-friendly chat app that works on mobile and desktop.",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -72,7 +99,6 @@ const manifest = {
   ]
 };
 
-// Inject manifest dynamically
 const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
 const manifestURL = URL.createObjectURL(manifestBlob);
 const link = document.createElement('link');
@@ -80,13 +106,17 @@ link.rel = 'manifest';
 link.href = manifestURL;
 document.head.appendChild(link);
 
-// Inline service worker
+// --------------------
+// Inline Service Worker
+// --------------------
 const swCode = `
-const CACHE_NAME = 'single-file-pwa-v1';
+const CACHE_NAME = 'private-chat-pwa-v1';
 const ASSETS = ['./'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
+  );
 });
 
 self.addEventListener('fetch', e => {
