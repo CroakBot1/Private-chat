@@ -1,19 +1,21 @@
-const CACHE_NAME = 'private-chat-pwa-v1';
-const ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon.png'
-];
+// handle the beforeinstallprompt event 
+window.addEventListener('beforeinstallprompt', e => {
+  // prevent the install dialog from appearing too early
+  e.preventDefault();
 
-self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
-  );
+  // store the event for later use
+  window.deferredPrompt = e;
 });
 
-self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(resp => resp || fetch(e.request))
-  );
-});
+// event listener for the install button click
+installButton.addEventListener('click', () => {
+  if(window.deferredPrompt) {
+    // call the prompt method on the deferredPrompt object to display the install dialog
+    window.deferredPrompt.prompt();
+  }
+  else {
+    // show a dialog with instructions for browsers that don't support beforeinstallprompt
+  }
+}
+      
+Documentation
