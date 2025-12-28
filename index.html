@@ -33,36 +33,45 @@
       z-index:10;
       background:#000;
     }
+    #motionBtn {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      background:#00ffcc;
+      color:#000;
+      border:none;
+      border-radius:5px;
+      font-weight:bold;
+      cursor:pointer;
+      z-index:11;
+    }
   </style>
 
   <!-- AUTO-GENERATE BLACK ICONS -->
   <script>
-  function generateIcons() {
-    const sizes = [192, 512];
-    sizes.forEach(size => {
-      const canvas = document.createElement('canvas');
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext('2d');
+    function generateIcons() {
+      const sizes = [192, 512];
+      sizes.forEach(size => {
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
 
-      // Fill black
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, size, size);
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, size, size);
 
-      // Convert to PNG data URL
-      const dataURL = canvas.toDataURL('image/png');
+        const dataURL = canvas.toDataURL('image/png');
 
-      // Save as <link> dynamically for manifest
-      const link = document.createElement('link');
-      link.rel = 'icon';
-      link.sizes = `${size}x${size}`;
-      link.href = dataURL;
-      document.head.appendChild(link);
-    });
-  }
-
-  // Run on page load
-  generateIcons();
+        const link = document.createElement('link');
+        link.rel = 'icon';
+        link.sizes = `${size}x${size}`;
+        link.href = dataURL;
+        document.head.appendChild(link);
+      });
+    }
+    generateIcons();
   </script>
 </head>
 <body>
@@ -74,10 +83,57 @@
   onload="document.getElementById('loading').style.display='none';">
 </iframe>
 
+<button id="motionBtn">Start Screen Motion Monitor</button>
+
 <script>
+  // Service Worker
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js');
   }
+
+  // Motion Detection Button Logic
+  const motionBtn = document.getElementById('motionBtn');
+  motionBtn.onclick = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      video.play();
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      let lastFrame = null;
+
+      function checkMotion() {
+        if(video.videoWidth === 0) return requestAnimationFrame(checkMotion);
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        const frame = ctx.getImageData(0,0,canvas.width,canvas.height);
+
+        if(lastFrame){
+          let diff = 0;
+          for(let i=0;i<frame.data.length;i+=4){
+            diff += Math.abs(frame.data[i] - lastFrame.data[i]);
+            diff += Math.abs(frame.data[i+1] - lastFrame.data[i+1]);
+            diff += Math.abs(frame.data[i+2] - lastFrame.data[i+2]);
+          }
+          if(diff > 1000000){ // adjust threshold
+            console.log('Motion detected!');
+            // Auto-lock or custom logic goes here
+          }
+        }
+        lastFrame = frame;
+        requestAnimationFrame(checkMotion);
+      }
+
+      checkMotion();
+    } catch(err){
+      console.error('Screen capture failed:', err);
+    }
+  };
 </script>
 
 </body>
