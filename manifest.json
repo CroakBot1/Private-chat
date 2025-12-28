@@ -1,6 +1,6 @@
 {
-  "name": "Quantum Trading",
-  "short_name": "Quantum",
+  "name": "Private Chat",
+  "short_name": "Chat",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
