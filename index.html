@@ -59,6 +59,7 @@
     padding: 5px 10px;
     border-radius: 5px;
     z-index: 20;
+    display:none; /* hidden until started */
   }
   #fullscreenNotice {
     position: fixed;
@@ -72,7 +73,6 @@
   }
 </style>
 
-<!-- AUTO-GENERATE BLACK ICONS -->
 <script>
 function generateIcons() {
   const sizes = [192, 512];
@@ -101,7 +101,7 @@ generateIcons();
 <body>
 
 <div id="loading">Launching Private Chat…</div>
-<div id="countdown">00:00</div>
+<div id="countdown">00:00:00</div>
 <div id="fullscreenNotice">You are not in full screen!</div>
 
 <iframe src="https://private-chat-sage-zeta.vercel.app/" 
@@ -117,25 +117,6 @@ generateIcons();
   }
 
   // -------------------------
-  // Countdown Timer
-  let countdownSec = 300; // 5 minutes
-  const countdownEl = document.getElementById('countdown');
-
-  function updateCountdown() {
-    const minutes = Math.floor(countdownSec/60).toString().padStart(2,'0');
-    const seconds = (countdownSec%60).toString().padStart(2,'0');
-    countdownEl.textContent = `${minutes}:${seconds}`;
-    if(countdownSec > 0){
-      countdownSec--;
-      setTimeout(updateCountdown, 1000);
-    } else {
-      alert("Time's up!");
-    }
-  }
-
-  updateCountdown();
-
-  // -------------------------
   // Fullscreen detection
   const fsNotice = document.getElementById('fullscreenNotice');
   function checkFullscreen() {
@@ -146,7 +127,6 @@ generateIcons();
     }
   }
   setInterval(checkFullscreen, 500);
-
   document.body.addEventListener('click', () => {
     if(!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(()=>{});
@@ -154,9 +134,38 @@ generateIcons();
   });
 
   // -------------------------
-  // Motion Detection Button Logic
+  // Motion Detection + Countdown Timer
   const motionBtn = document.getElementById('motionBtn');
+  const countdownEl = document.getElementById('countdown');
+  let timerInterval = null;
+  let secondsPassed = 0;
+  let motionActive = false;
+
   motionBtn.onclick = async () => {
+    if(motionActive){
+      // Stop monitoring
+      motionActive = false;
+      clearInterval(timerInterval);
+      countdownEl.style.display = 'none';
+      motionBtn.textContent = "Start Screen Motion Monitor";
+      return;
+    }
+
+    // Start monitoring
+    motionActive = true;
+    countdownEl.style.display = 'block';
+    motionBtn.textContent = "Stop Screen Motion Monitor";
+
+    // Start timer
+    timerInterval = setInterval(() => {
+      secondsPassed++;
+      const hrs = Math.floor(secondsPassed/3600).toString().padStart(2,'0');
+      const mins = Math.floor((secondsPassed%3600)/60).toString().padStart(2,'0');
+      const secs = (secondsPassed%60).toString().padStart(2,'0');
+      countdownEl.textContent = `${hrs}:${mins}:${secs}`;
+    }, 1000);
+
+    // Screen motion detection
     try {
       const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
       const video = document.createElement('video');
@@ -168,6 +177,7 @@ generateIcons();
       let lastFrame = null;
 
       function checkMotion() {
+        if(!motionActive) return; // stop if monitoring stopped
         if(video.videoWidth === 0) return requestAnimationFrame(checkMotion);
 
         canvas.width = video.videoWidth;
