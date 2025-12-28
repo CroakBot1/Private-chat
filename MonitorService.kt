@@ -1,21 +1,21 @@
+// File: MonitorService.kt
 package com.example.monitorapp
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.Service
+import android.app.*
 import android.content.Intent
 import android.os.Build
-import android.os.IBinder
-import androidx.core.app.NotificationCompat
 import android.os.Handler
+import android.os.IBinder
 import android.util.Log
+import androidx.core.app.NotificationCompat
 
 class MonitorService : Service() {
 
     private val CHANNEL_ID = "MonitorServiceChannel"
     private val handler = Handler()
     private var secondsPassed = 0
+
+    private lateinit var overlay: OverlayView
 
     override fun onCreate() {
         super.onCreate()
@@ -27,6 +27,10 @@ class MonitorService : Service() {
             .build()
         startForeground(1, notification)
 
+        // Start overlay
+        overlay = OverlayView(this)
+        overlay.show()
+
         startTimer()
     }
 
@@ -34,6 +38,7 @@ class MonitorService : Service() {
         handler.post(object : Runnable {
             override fun run() {
                 secondsPassed++
+                overlay.updateCountdown(secondsPassed)
                 Log.d("MonitorService", "Seconds passed: $secondsPassed")
                 handler.postDelayed(this, 1000)
             }
