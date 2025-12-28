@@ -1,10 +1,11 @@
 {
-  "name": "Quantum Trading PWA Runner",
-  "short_name": "QuantumRunner",
-  "start_url": "index.html",
+  "name": "Quantum Trading",
+  "short_name": "Quantum",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "icon-192.png",
@@ -18,4 +19,3 @@
     }
   ]
 }
-      
