@@ -52,9 +52,13 @@
     position: fixed;
     top: 10px;
     right: 10px;
-    font-size: 24px;
+    font-size: 32px;
     font-weight: bold;
-    z-index:11;
+    color: #00ffcc;
+    background: rgba(0,0,0,0.5);
+    padding: 5px 10px;
+    border-radius: 5px;
+    z-index: 20;
   }
   #fullscreenNotice {
     position: fixed;
@@ -106,6 +110,7 @@ generateIcons();
 <button id="motionBtn">Start Screen Motion Monitor</button>
 
 <script>
+  // -------------------------
   // Service Worker
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js');
@@ -115,17 +120,19 @@ generateIcons();
   // Countdown Timer
   let countdownSec = 300; // 5 minutes
   const countdownEl = document.getElementById('countdown');
+
   function updateCountdown() {
     const minutes = Math.floor(countdownSec/60).toString().padStart(2,'0');
     const seconds = (countdownSec%60).toString().padStart(2,'0');
     countdownEl.textContent = `${minutes}:${seconds}`;
-    if(countdownSec > 0) {
+    if(countdownSec > 0){
       countdownSec--;
       setTimeout(updateCountdown, 1000);
     } else {
       alert("Time's up!");
     }
   }
+
   updateCountdown();
 
   // -------------------------
