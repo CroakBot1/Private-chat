@@ -34,7 +34,7 @@
     z-index:10;
     background:#000;
   }
-  #motionBtn {
+  #monitorBtn {
     position: fixed;
     bottom: 20px;
     left: 50%;
@@ -48,7 +48,6 @@
     cursor:pointer;
     z-index:11;
   }
-  /* Overlay for countdown and notices */
   #overlay {
     position: fixed;
     top:0;
@@ -56,7 +55,7 @@
     width:100%;
     height:100%;
     z-index:9999;
-    pointer-events:none; /* allows clicks to pass through iframe */
+    pointer-events:none;
   }
   #countdown {
     position: absolute;
@@ -68,7 +67,7 @@
     background: rgba(0,0,0,0.5);
     padding:5px 10px;
     border-radius:5px;
-    display:none; /* hidden until started */
+    display:none;
   }
   #fullscreenNotice {
     position: absolute;
@@ -81,7 +80,6 @@
   }
 </style>
 
-<!-- AUTO-GENERATE BLACK ICONS -->
 <script>
 function generateIcons() {
   const sizes = [192, 512];
@@ -90,12 +88,9 @@ function generateIcons() {
     canvas.width = size;
     canvas.height = size;
     const ctx = canvas.getContext('2d');
-
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, size, size);
-
     const dataURL = canvas.toDataURL('image/png');
-
     const link = document.createElement('link');
     link.rel = 'icon';
     link.sizes = `${size}x${size}`;
@@ -111,7 +106,6 @@ generateIcons();
 
 <div id="loading">Launching Private Chat…</div>
 
-<!-- Overlay container -->
 <div id="overlay">
   <div id="countdown">00:00:00</div>
   <div id="fullscreenNotice">You are not in full screen!</div>
@@ -120,114 +114,68 @@ generateIcons();
 <iframe src="https://private-chat-sage-zeta.vercel.app/" 
   onload="document.getElementById('loading').style.display='none';"></iframe>
 
-<button id="motionBtn">Start Screen Motion Monitor</button>
+<button id="monitorBtn">Start Activity Monitor</button>
 
 <script>
-  // -------------------------
-  // Service Worker
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js');
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js');
+}
+
+// Fullscreen detection
+const fsNotice = document.getElementById('fullscreenNotice');
+function checkFullscreen() {
+  if (!document.fullscreenElement) {
+    fsNotice.style.display = 'block';
+  } else {
+    fsNotice.style.display = 'none';
+  }
+}
+setInterval(checkFullscreen, 500);
+document.body.addEventListener('click', () => {
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+});
+
+// Countdown & pseudo motion monitor
+const monitorBtn = document.getElementById('monitorBtn');
+const countdownEl = document.getElementById('countdown');
+let timerInterval = null;
+let secondsPassed = 0;
+let monitoring = false;
+
+monitorBtn.onclick = () => {
+  if(monitoring){
+    // Stop monitoring
+    monitoring = false;
+    clearInterval(timerInterval);
+    countdownEl.style.display = 'none';
+    monitorBtn.textContent = "Start Activity Monitor";
+    return;
   }
 
-  // -------------------------
-  // Fullscreen detection
-  const fsNotice = document.getElementById('fullscreenNotice');
-  function checkFullscreen() {
-    if (!document.fullscreenElement) {
-      fsNotice.style.display = 'block';
-    } else {
-      fsNotice.style.display = 'none';
-    }
+  // Start monitoring
+  monitoring = true;
+  countdownEl.style.display = 'block';
+  monitorBtn.textContent = "Stop Activity Monitor";
+
+  // Start timer
+  timerInterval = setInterval(() => {
+    secondsPassed++;
+    const hrs = Math.floor(secondsPassed/3600).toString().padStart(2,'0');
+    const mins = Math.floor((secondsPassed%3600)/60).toString().padStart(2,'0');
+    const secs = (secondsPassed%60).toString().padStart(2,'0');
+    countdownEl.textContent = `${hrs}:${mins}:${secs}`;
+  }, 1000);
+
+  // Pseudo motion monitor: detect taps & swipes on iframe
+  const iframe = document.querySelector('iframe');
+  function logActivity(e){
+    console.log('User interaction detected:', e.type);
+    // Add custom logic if needed (alert, log, etc.)
   }
-  setInterval(checkFullscreen, 500);
-
-  document.body.addEventListener('click', () => {
-    if(!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(()=>{});
-    }
-  });
-
-  // -------------------------
-  // Motion Detection + Countdown Timer
-  const motionBtn = document.getElementById('motionBtn');
-  const countdownEl = document.getElementById('countdown');
-  let timerInterval = null;
-  let secondsPassed = 0;
-  let motionActive = false;
-
-  motionBtn.onclick = async () => {
-    if(motionActive){
-      // Stop monitoring
-      motionActive = false;
-      clearInterval(timerInterval);
-      countdownEl.style.display = 'none';
-      motionBtn.textContent = "Start Screen Motion Monitor";
-      return;
-    }
-
-    // Start monitoring
-    motionActive = true;
-    countdownEl.style.display = 'block';
-    motionBtn.textContent = "Stop Screen Motion Monitor";
-
-    // Start timer
-    timerInterval = setInterval(() => {
-      secondsPassed++;
-      const hrs = Math.floor(secondsPassed/3600).toString().padStart(2,'0');
-      const mins = Math.floor((secondsPassed%3600)/60).toString().padStart(2,'0');
-      const secs = (secondsPassed%60).toString().padStart(2,'0');
-      countdownEl.textContent = `${hrs}:${mins}:${secs}`;
-    }, 1000);
-
-    // Screen motion detection
-    try {
-      const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-      const video = document.createElement('video');
-      video.srcObject = stream;
-      video.style.display = 'none';
-      document.body.appendChild(video);
-      await video.play();
-
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      let lastFrame = null;
-
-      function checkMotion() {
-        if(!motionActive) return;
-        if(video.videoWidth === 0) return requestAnimationFrame(checkMotion);
-
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        const frame = ctx.getImageData(0,0,canvas.width,canvas.height);
-
-        if(lastFrame){
-          let diff = 0;
-          for(let i=0;i<frame.data.length;i+=4){
-            diff += Math.abs(frame.data[i] - lastFrame.data[i]);
-            diff += Math.abs(frame.data[i+1] - lastFrame.data[i+1]);
-            diff += Math.abs(frame.data[i+2] - lastFrame.data[i+2]);
-          }
-          if(diff > 1000000){
-            console.log('Motion detected!');
-            // Auto-lock or custom logic goes here
-          }
-        }
-        lastFrame = frame;
-        requestAnimationFrame(checkMotion);
-      }
-
-      checkMotion();
-    } catch(err){
-      console.error('Screen capture failed:', err);
-      alert("Screen monitoring failed: " + err.message);
-      motionActive = false;
-      clearInterval(timerInterval);
-      countdownEl.style.display = 'none';
-      motionBtn.textContent = "Start Screen Motion Monitor";
-    }
-  };
+  iframe.addEventListener('click', logActivity);
+  iframe.addEventListener('touchstart', logActivity);
+  iframe.addEventListener('touchmove', logActivity);
+};
 </script>
 
 </body>
