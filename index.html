@@ -1,48 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quantum Trading PWA Runner</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quantum Trading App</title>
 
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#000000" />
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#000000">
 
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
+      background: #000;
       overflow: hidden;
-      background: #000;
-      color: #fff;
-      font-family: Arial, sans-serif;
-    }
-    #loader {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #000;
-      color: #0f0;
-      font-size: 18px;
-      z-index: 999;
     }
     iframe {
       width: 100%;
       height: 100%;
       border: none;
     }
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      color: #00ff99;
+      font-family: Arial, sans-serif;
+      z-index: 10;
+    }
   </style>
 </head>
 <body>
 
-<div id="loader">Loading Quantum Trading...</div>
+<div id="loading">Launching Quantum Trading...</div>
 
 <iframe
   src="https://quantum-trading-pi.vercel.app/"
-  onload="document.getElementById('loader').style.display='none';">
+  onload="document.getElementById('loading').style.display='none';">
 </iframe>
 
 <script>
