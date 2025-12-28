@@ -1,21 +1,21 @@
-// handle the beforeinstallprompt event 
-window.addEventListener('beforeinstallprompt', e => {
-  // prevent the install dialog from appearing too early
-  e.preventDefault();
+const CACHE = "quantum-pwa-v1";
 
-  // store the event for later use
-  window.deferredPrompt = e;
+self.addEventListener("install", event => {
+  event.waitUntil(
+    caches.open(CACHE).then(cache =>
+      cache.addAll([
+        "./",
+        "./index.html",
+        "./manifest.json",
+      ])
+    )
+  );
 });
 
-// event listener for the install button click
-installButton.addEventListener('click', () => {
-  if(window.deferredPrompt) {
-    // call the prompt method on the deferredPrompt object to display the install dialog
-    window.deferredPrompt.prompt();
-  }
-  else {
-    // show a dialog with instructions for browsers that don't support beforeinstallprompt
-  }
-}
-      
-Documentation
+self.addEventListener("fetch", event => {
+  event.respondWith(
+    caches.match(event.request).then(cached =>
+      cached || fetch(event.request)
+    )
+  );
+});
