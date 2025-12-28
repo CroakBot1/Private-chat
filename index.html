@@ -3,25 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PWA Runner</title>
+  <title>Quantum Trading PWA Runner</title>
 
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#000000">
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#000000" />
 
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      background: #000;
       height: 100%;
       overflow: hidden;
-      font-family: Arial, sans-serif;
-    }
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
       background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
     }
     #loader {
       position: fixed;
@@ -29,18 +24,24 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
       background: #000;
-      z-index: 10;
+      color: #0f0;
+      font-size: 18px;
+      z-index: 999;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
     }
   </style>
 </head>
 <body>
 
-<div id="loader">Loading App...</div>
+<div id="loader">Loading Quantum Trading...</div>
 
 <iframe
-  src="https://example.com"
+  src="https://quantum-trading-pi.vercel.app/"
   onload="document.getElementById('loader').style.display='none';">
 </iframe>
 
