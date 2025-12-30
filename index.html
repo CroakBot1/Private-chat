@@ -1,148 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>COD SERVER SIMULATION</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<style>
-  body {
-    margin: 0;
-    background: radial-gradient(circle at top, #120000, #000000 70%);
-    color: #ff3b3b;
-    font-family: "Courier New", monospace;
-    overflow: hidden;
-  }
-
-  .header {
-    padding: 12px;
-    border-bottom: 1px solid #330000;
-    background: rgba(20,0,0,0.8);
-  }
-
-  .title {
-    font-size: 16px;
-    letter-spacing: 2px;
-  }
-
-  .dev {
-    font-size: 12px;
-    color: #ff8080;
-    margin-top: 4px;
-  }
-
-  .terminal {
-    padding: 12px;
-    height: calc(100vh - 70px);
-    overflow-y: auto;
-    white-space: pre-wrap;
-    line-height: 1.4;
-  }
-
-  .cursor {
-    display: inline-block;
-    width: 10px;
-    animation: blink 1s infinite;
-  }
-
-  @keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
-  }
-
-  .warning { color: #ff0000; }
-  .info { color: #ff9f43; }
-  .ok { color: #7dff7d; }
-  .system { color: #ff3b3b; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PWA Black Box App</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #000;
+      color: #fff;
+    }
+    h1 {
+      text-align: center;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
+  <h1>Welcome to PWA Black Box App</h1>
+  <button id="notifyBtn">Send Test Notification</button>
 
-<div class="header">
-  <div class="title">CALL OF DUTY :: SERVER NODE MONITOR</div>
-  <div class="dev">DEVELOPER : <strong>loyd anonymo$$</strong> | MODE : SIMULATION ONLY</div>
-</div>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('Service Worker Registered'));
+    }
 
-<div class="terminal" id="terminal">
-  Initializing secure environment...
-</div>
-
-<script>
-const terminal = document.getElementById("terminal");
-
-const lines = [
-  "[SYSTEM] Booting COD Secure Server v9.44",
-  "[SYSTEM] Allocating virtual memory blocks...",
-  "[INFO] Connecting to master node: cod-mw-core-01",
-  "[INFO] Handshake accepted (simulation)",
-  "[SYSTEM] Syncing player packets...",
-  "[SYSTEM] Scanning aim vectors (passive mode)",
-  "[WARNING] Irregular aim curve detected :: player_id=***",
-  "[INFO] Fire trigger state locked (server authority)",
-  "[SYSTEM] Verifying integrity hashes...",
-  "[OK] No memory injection found",
-  "[SYSTEM] Monitoring recoil patterns...",
-  "[WARNING] Suspicious snap movement (educational flag)",
-  "[SYSTEM] Anti-cheat core running",
-  "[SYSTEM] Server-side arbitration enabled",
-  "[INFO] Latency normalization active",
-  "[SYSTEM] Writing audit logs...",
-  "[OK] Session stable",
-  "[SYSTEM] Elevating console privileges",
-  "ACCESS GRANTED :: DEV MODE",
-  "[SYSTEM] Developer signature verified",
-  ">> developer: loyd anonymo$$",
-  "[SYSTEM] Live simulation running...",
-  "[SYSTEM] Do not terminate process",
-  "[SYSTEM] Watching server heartbeat...",
-  "[OK] All systems under observation"
-];
-
-let lineIndex = 0;
-let charIndex = 0;
-let currentLine = "";
-
-function getClass(text) {
-  if (text.includes("WARNING")) return "warning";
-  if (text.includes("INFO")) return "info";
-  if (text.includes("OK")) return "ok";
-  return "system";
-}
-
-function typeLine() {
-  if (lineIndex >= lines.length) {
-    terminal.innerHTML += "\n\nSYSTEM IDLE ▌";
-    terminal.scrollTop = terminal.scrollHeight;
-    return;
-  }
-
-  const fullLine = lines[lineIndex];
-
-  if (charIndex === 0) {
-    currentLine = "";
-    terminal.innerHTML += "\n";
-  }
-
-  if (charIndex < fullLine.length) {
-    currentLine += fullLine.charAt(charIndex);
-    terminal.lastChild.textContent = currentLine;
-    charIndex++;
-  } else {
-    // finalize line with color
-    terminal.lastChild.remove();
-    const span = document.createElement("span");
-    span.className = getClass(fullLine);
-    span.textContent = fullLine;
-    terminal.appendChild(span);
-    terminal.appendChild(document.createElement("br"));
-    charIndex = 0;
-    lineIndex++;
-  }
-
-  terminal.scrollTop = terminal.scrollHeight;
-}
-
-setInterval(typeLine, 45);
-</script>
-
+    document.getElementById('notifyBtn').addEventListener('click', () => {
+      if (Notification.permission === 'granted') {
+        new Notification('Hello from Black Box PWA!');
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+          if(permission === 'granted'){
+            new Notification('Hello from Black Box PWA!');
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>
